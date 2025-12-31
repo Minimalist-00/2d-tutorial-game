@@ -8,6 +8,13 @@ public class PlayerController : MonoBehaviour
   private bool isMoving;
   private Vector2 input;
 
+  private Animator animator;
+
+  private void Awake()
+  {
+    animator = GetComponent<Animator>();
+  }
+
   private void Update()
   {
     if(!isMoving)
@@ -15,7 +22,7 @@ public class PlayerController : MonoBehaviour
       input.x = Input.GetAxisRaw("Horizontal");
       input.y = Input.GetAxisRaw("Vertical");
       
-      // 斜め移動を防ぐ(4方向のみ)
+      // 移動を4方向のみにする
       if(input.x != 0)
       {
         input.y = 0;
@@ -23,13 +30,17 @@ public class PlayerController : MonoBehaviour
       
       if(input != Vector2.zero)
       {
-        // var targetPos = transform.position;
-        // targetPos.x += input.x;
-        // targetPos.y += input.y;
-        // StartCoroutine(Move(targetPos));
-        transform.position += new Vector3(input.x, input.y, 0) * moveSpeed * Time.deltaTime;
+        animator.SetFloat("moveX", input.x);
+        animator.SetFloat("moveY", input.y);
+
+        var targetPos = transform.position;
+        targetPos.x += input.x;
+        targetPos.y += input.y;
+        StartCoroutine(Move(targetPos));
       }
     }
+
+    animator.SetBool("isMoving", isMoving);
   }
 
   IEnumerator Move(Vector3 targetPos)
